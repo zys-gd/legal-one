@@ -1,0 +1,26 @@
+services:
+    php:
+        container_name: legal-one-php
+        restart: on-failure
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            target: local
+        environment:
+            PHP_IDE_CONFIG: serverName=legal-one
+        volumes:
+            - ./app:/var/www
+            - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+    nginx:
+        image: nginx:1.25
+        ports:
+            - 80:80
+        volumes:
+            - ./app/public:/var/www/public
+            - ./docker/nginx:/etc/nginx/conf.d
+        environment:
+            PHP_HOST: legal-one-php
+            LOG_FORMAT: off
+        depends_on:
+            - php
