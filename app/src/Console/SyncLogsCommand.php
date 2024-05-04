@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 #[AsCommand(
     name: 'app:sync:logs',
@@ -64,6 +65,10 @@ class SyncLogsCommand extends Command
             }
             $this->logRepository->insertBatch(array_filter($content));
             $this->cachedReadLine($logPath, $startLineNumber + $read);
+        } catch (Throwable $e) {
+            $output->writeln(sprintf('Exception: %s', $e->getMessage()));
+
+            return Command::FAILURE;
         } finally {
             $file->flock(LOCK_UN);
         }

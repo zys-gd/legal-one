@@ -23,11 +23,16 @@ class LogRepository
         $this->em->flush();
     }
 
-    public function search(CountRequestDto $filter)
+    public function search(CountRequestDto $filter): int
     {
         $qb = $this->em->createQueryBuilder()
             ->select('COUNT(l.id)')
             ->from(Log::class, 'l');
+
+        if ($filter->serviceNames) {
+            $qb->andWhere('l.service IN (:serviceNames)')
+                ->setParameter('serviceNames', $filter->serviceNames);
+        }
 
         if ($filter->statusCode) {
             $qb->andWhere('l.statusCode = :statusCode')
@@ -35,16 +40,15 @@ class LogRepository
         }
 
         if ($filter->startDate) {
-            $qb->andWhere('l.datetime >= DATE(:startDate)')
+            $qb->andWhere('l.datetime >= DATETIME(:startDate)')
                 ->setParameter('startDate', $filter->startDate->format('c'));
         }
 
         if ($filter->endDate) {
-            $qb->andWhere('l.datetime <= DATE(:endDate)')
+            $qb->andWhere('l.datetime <= DATETIME(:endDate)')
                 ->setParameter('endDate', $filter->endDate->format('c'));
         }
 
-        return $qb->getQuery()
-            ->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 }

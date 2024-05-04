@@ -26,7 +26,7 @@ doctrine:
             auto_mapping: true
         dql:
             string_functions:
-                DATE: App\Service\Dql\Datetime
+                DATETIME: App\Service\Dql\Datetime
 
 when@test:
     doctrine:

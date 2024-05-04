@@ -8,7 +8,13 @@ framework:
 
     #esi: true
     #fragments: true
-
+    exceptions:
+        Symfony\Component\HttpKernel\Exception\BadRequestHttpException:
+            status_code: 400
+        Symfony\Component\Validator\Exception\ValidationFailedException:
+            status_code: 400
+        Symfony\Component\HttpKernel\Exception\HttpException:
+            status_code: 400
 when@test:
     framework:
         test: true
